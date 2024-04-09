@@ -1,4 +1,4 @@
-use std::{io::{Error, Write}, net::{TcpListener, TcpStream}};
+use std::{io::{Error, Read, Write}, net::{TcpListener, TcpStream}};
 
 fn main() {
     println!("Logs from your program will appear here!");
@@ -26,9 +26,9 @@ fn main() {
 }
 
 fn handle_client(mut stream: TcpStream) -> Result<(), Error>{
-    // let mut buf = [0; 512];
+    let mut buf = [0; 512];
     loop {
-        // let bytes_read = stream.read(&mut  buf)?;
+        stream.read(&mut  buf)?;
         stream.write_all("+PONG\r\n".as_bytes())?;
     }
 }
