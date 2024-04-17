@@ -1,22 +1,34 @@
-use std::{io::{Error, Read, Write}, net::{TcpListener, TcpStream}};
+mod pool;
+
+use std::{
+    io::{Error, Read, Write},
+    net::{TcpListener, TcpStream},
+};
+
+use pool::ThreadPool;
+
 
 fn main() {
     println!("Logs from your program will appear here!");
 
     let listener = TcpListener::bind("127.0.0.1:6379").unwrap();
 
+    let pool = ThreadPool::new(10).unwrap();
+
     for stream in listener.incoming() {
         match stream {
             Ok(_stream) => {
-               match handle_client(_stream) {
-                    Ok(..)=> {
-                        print!("handle client succesfully");
-                    }
-                    Err(e) => {
-                        print!("failed to handle client err={e}")
-                    }
+                pool.execute(|| {
+                    match handle_client(_stream) {
+                        Ok(..)=> {
+                            print!("handle client succesfully");
+                        }
+                        Err(e) => {
+                            print!("failed to handle client err={e}")
+                        }
 
-               };
+                   };
+                });
             }
             Err(e) => {
                 println!("error: {}", e);
